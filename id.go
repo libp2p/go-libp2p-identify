@@ -9,15 +9,15 @@ import (
 	ma "github.com/ipfs/go-ipfs/Godeps/_workspace/src/github.com/jbenet/go-multiaddr"
 	context "github.com/ipfs/go-ipfs/Godeps/_workspace/src/golang.org/x/net/context"
 
-	mstream "github.com/ipfs/go-ipfs/metrics/stream"
-	host "github.com/ipfs/go-ipfs/p2p/host"
-	inet "github.com/ipfs/go-ipfs/p2p/net"
-	peer "github.com/ipfs/go-ipfs/p2p/peer"
-	protocol "github.com/ipfs/go-ipfs/p2p/protocol"
-	pb "github.com/ipfs/go-ipfs/p2p/protocol/identify/pb"
 	config "github.com/ipfs/go-ipfs/repo/config"
 	logging "github.com/ipfs/go-ipfs/vendor/go-log-v1.0.0"
-	lgbl "github.com/ipfs/go-ipfs/util/eventlog/loggables"
+	host "github.com/ipfs/go-libp2p/p2p/host"
+	inet "github.com/ipfs/go-libp2p/p2p/net"
+	peer "github.com/ipfs/go-libp2p/p2p/peer"
+	protocol "github.com/ipfs/go-libp2p/p2p/protocol"
+	pb "github.com/ipfs/go-libp2p/p2p/protocol/identify/pb"
+	lgbl "github.com/ipfs/go-libp2p/util/eventlog/loggables"
+	mstream "github.com/ipfs/go-libp2p/util/metrics/stream"
 )
 
 var log = logging.Logger("net/identify")

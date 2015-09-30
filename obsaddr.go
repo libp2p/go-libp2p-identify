@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	peer "github.com/ipfs/go-ipfs/p2p/peer"
+	peer "github.com/ipfs/go-libp2p/p2p/peer"
 
 	ma "github.com/ipfs/go-ipfs/Godeps/_workspace/src/github.com/jbenet/go-multiaddr"
 )
