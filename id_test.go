@@ -9,8 +9,8 @@ import (
 	identify "github.com/ipfs/go-libp2p/p2p/protocol/identify"
 	testutil "github.com/ipfs/go-libp2p/p2p/test/util"
 
-	ma "github.com/ipfs/go-ipfs/Godeps/_workspace/src/github.com/jbenet/go-multiaddr"
-	context "github.com/ipfs/go-ipfs/Godeps/_workspace/src/golang.org/x/net/context"
+	ma "github.com/jbenet/go-multiaddr"
+	context "golang.org/x/net/context"
 )
 
 func subtestIDService(t *testing.T, postDialWait time.Duration) {
@@ -79,7 +79,7 @@ func testHasProtocolVersions(t *testing.T, h host.Host, p peer.ID) {
 		t.Error("no protocol version")
 		return
 	}
-	if v.(string) != identify.IpfsVersion {
+	if v.(string) != identify.LibP2PVersion {
 		t.Error("protocol mismatch", err)
 	}
 	v, err = h.Peerstore().Get(p, "AgentVersion")

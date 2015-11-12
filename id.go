@@ -4,31 +4,31 @@ import (
 	"strings"
 	"sync"
 
-	semver "github.com/ipfs/go-ipfs/Godeps/_workspace/src/github.com/coreos/go-semver/semver"
-	ggio "github.com/ipfs/go-ipfs/Godeps/_workspace/src/github.com/gogo/protobuf/io"
-	ma "github.com/ipfs/go-ipfs/Godeps/_workspace/src/github.com/jbenet/go-multiaddr"
-	context "github.com/ipfs/go-ipfs/Godeps/_workspace/src/golang.org/x/net/context"
+	semver "github.com/coreos/go-semver/semver"
+	ggio "github.com/gogo/protobuf/io"
+	ma "github.com/jbenet/go-multiaddr"
+	msmux "github.com/whyrusleeping/go-multistream"
+	context "golang.org/x/net/context"
 
-	config "github.com/ipfs/go-ipfs/repo/config"
-	logging "github.com/ipfs/go-ipfs/vendor/go-log-v1.0.0"
 	host "github.com/ipfs/go-libp2p/p2p/host"
+	mstream "github.com/ipfs/go-libp2p/p2p/metrics/stream"
 	inet "github.com/ipfs/go-libp2p/p2p/net"
 	peer "github.com/ipfs/go-libp2p/p2p/peer"
-	protocol "github.com/ipfs/go-libp2p/p2p/protocol"
 	pb "github.com/ipfs/go-libp2p/p2p/protocol/identify/pb"
-	lgbl "github.com/ipfs/go-libp2p/util/eventlog/loggables"
-	mstream "github.com/ipfs/go-libp2p/util/metrics/stream"
+
+	logging "QmWRypnfEwrgH4k93KEHN5hng7VjKYkWmzDYRuTZeh2Mgh/go-log"
+	lgbl "util/eventlog/loggables"
 )
 
 var log = logging.Logger("net/identify")
 
 // ID is the protocol.ID of the Identify Service.
-const ID protocol.ID = "/ipfs/identify"
+const ID = "/ipfs/identify"
 
-// IpfsVersion holds the current protocol version for a client running this code
+// LibP2PVersion holds the current protocol version for a client running this code
 // TODO(jbenet): fix the versioning mess.
-const IpfsVersion = "ipfs/0.1.0"
-const ClientVersion = "go-ipfs/" + config.CurrentVersionNumber
+const LibP2PVersion = "ipfs/0.1.0"
+const ClientVersion = "go-libp2p/0.1.0"
 
 // IDService is a structure that implements ProtocolIdentify.
 // It is a trivial service that gives the other peer some
@@ -87,14 +87,14 @@ func (ids *IDService) IdentifyConn(c inet.Conn) {
 		s = mstream.WrapStream(s, ID, bwc)
 
 		// ok give the response to our handler.
-		if err := protocol.WriteHeader(s, ID); err != nil {
+		if err := msmux.SelectProtoOrFail(ID, s); err != nil {
 			log.Debugf("error writing stream header for %s", ID)
 			log.Event(context.TODO(), "IdentifyOpenFailed", c.RemotePeer())
 			s.Close()
-			c.Close()
 			return
+		} else {
+			ids.ResponseHandler(s)
 		}
-		ids.ResponseHandler(s)
 	}
 
 	ids.currmu.Lock()
@@ -163,7 +163,7 @@ func (ids *IDService) populateMessage(mes *pb.Identify, c inet.Conn) {
 	log.Debugf("%s sent listen addrs to %s: %s", c.LocalPeer(), c.RemotePeer(), laddrs)
 
 	// set protocol versions
-	pv := IpfsVersion
+	pv := LibP2PVersion
 	av := ClientVersion
 	mes.ProtocolVersion = &pv
 	mes.AgentVersion = &av
@@ -202,7 +202,7 @@ func (ids *IDService) consumeMessage(mes *pb.Identify, c inet.Conn) {
 	// version check. if we shouldn't talk, bail.
 	// TODO: at this point, we've already exchanged information.
 	// move this into a first handshake before the connection can open streams.
-	if !protocolVersionsAreCompatible(pv, IpfsVersion) {
+	if !protocolVersionsAreCompatible(pv, LibP2PVersion) {
 		logProtocolMismatchDisconnect(c, pv, av)
 		c.Close()
 		return
