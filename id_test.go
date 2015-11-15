@@ -9,7 +9,7 @@ import (
 	identify "github.com/ipfs/go-libp2p/p2p/protocol/identify"
 	testutil "github.com/ipfs/go-libp2p/p2p/test/util"
 
-	ma "github.com/jbenet/go-multiaddr"
+	ma "QmaA6aDzeHjZiuqBtgYRz8ZXb1qMCoyMHgyDjBEYQniUKF/go-multiaddr"
 	context "golang.org/x/net/context"
 )
 

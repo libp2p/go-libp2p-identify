@@ -4,9 +4,9 @@ import (
 	"strings"
 	"sync"
 
+	ma "QmaA6aDzeHjZiuqBtgYRz8ZXb1qMCoyMHgyDjBEYQniUKF/go-multiaddr"
 	semver "github.com/coreos/go-semver/semver"
 	ggio "github.com/gogo/protobuf/io"
-	ma "github.com/jbenet/go-multiaddr"
 	msmux "github.com/whyrusleeping/go-multistream"
 	context "golang.org/x/net/context"
 
