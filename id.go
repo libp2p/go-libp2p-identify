@@ -4,11 +4,11 @@ import (
 	"strings"
 	"sync"
 
+	context "QmacZi9WygGK7Me8mH53pypyscHzU386aUZXpr28GZgUct/context"
 	ma "QmbWxL1aXQhBjc1XGjGF1f2KGBMCBYSuT2ThA8YXnXJK83/go-multiaddr"
 	ggio "QmfH4HuZyN1p2wQLWWkXC91Z76435xKrBVfLQ2MY8ayG5R/gogo-protobuf/io"
 	semver "github.com/coreos/go-semver/semver"
 	msmux "github.com/whyrusleeping/go-multistream"
-	context "golang.org/x/net/context"
 
 	host "github.com/ipfs/go-libp2p/p2p/host"
 	mstream "github.com/ipfs/go-libp2p/p2p/metrics/stream"
