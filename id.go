@@ -17,7 +17,7 @@ import (
 	pb "github.com/ipfs/go-libp2p/p2p/protocol/identify/pb"
 
 	logging "QmWRypnfEwrgH4k93KEHN5hng7VjKYkWmzDYRuTZeh2Mgh/go-log"
-	lgbl "util/eventlog/loggables"
+	lgbl "github.com/ipfs/go-libp2p/loggables"
 )
 
 var log = logging.Logger("net/identify")
