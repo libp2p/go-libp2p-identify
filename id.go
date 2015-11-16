@@ -5,8 +5,8 @@ import (
 	"sync"
 
 	ma "QmaA6aDzeHjZiuqBtgYRz8ZXb1qMCoyMHgyDjBEYQniUKF/go-multiaddr"
+	ggio "QmfH4HuZyN1p2wQLWWkXC91Z76435xKrBVfLQ2MY8ayG5R/gogo-protobuf/io"
 	semver "github.com/coreos/go-semver/semver"
-	ggio "github.com/gogo/protobuf/io"
 	msmux "github.com/whyrusleeping/go-multistream"
 	context "golang.org/x/net/context"
 
