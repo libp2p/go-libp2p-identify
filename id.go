@@ -4,11 +4,11 @@ import (
 	"strings"
 	"sync"
 
-	ma "gx/QmVUi2ncqnU48zsPgR1rQosDGwY3SSZ1Ndp33j33YjXdsj/go-multiaddr"
-	context "gx/QmacZi9WygGK7Me8mH53pypyscHzU386aUZXpr28GZgUct/context"
-	ggio "gx/QmchriuyWMcqHha3dG86rQyxoswSUpmLUBjuJ2kotB65qR/gogo-protobuf/io"
-	semver "gx/QmcrrEpx3VMUbrbgVroH3YiYyUS5c4YAykzyPJWKspUYLa/go-semver/semver"
-	msmux "gx/QmdrbcnPVM2FnZQQM7p2GU91XhpuyYyd1tzPouEyh1phyD/go-multistream"
+	semver "github.com/coreos/go-semver/semver"
+	ggio "github.com/gogo/protobuf/io"
+	ma "github.com/jbenet/go-multiaddr"
+	msmux "github.com/whyrusleeping/go-multistream"
+	context "golang.org/x/net/context"
 
 	host "github.com/ipfs/go-libp2p/p2p/host"
 	mstream "github.com/ipfs/go-libp2p/p2p/metrics/stream"
@@ -17,7 +17,7 @@ import (
 	pb "github.com/ipfs/go-libp2p/p2p/protocol/identify/pb"
 
 	lgbl "github.com/ipfs/go-libp2p/loggables"
-	logging "gx/QmfZZB1aVXWA4kaR5R4e9NifERT366TTCSagkfhmAbYLsu/go-log"
+	logging "github.com/ipfs/go-log"
 )
 
 var log = logging.Logger("net/identify")

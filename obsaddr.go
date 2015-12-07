@@ -6,7 +6,7 @@ import (
 
 	peer "github.com/ipfs/go-libp2p/p2p/peer"
 
-	ma "gx/QmVUi2ncqnU48zsPgR1rQosDGwY3SSZ1Ndp33j33YjXdsj/go-multiaddr"
+	ma "github.com/jbenet/go-multiaddr"
 )
 
 // ObservedAddr is an entry for an address reported by our peers.
