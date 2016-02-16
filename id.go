@@ -82,20 +82,20 @@ func (ids *IDService) IdentifyConn(c inet.Conn) {
 		log.Event(context.TODO(), "IdentifyOpenFailed", c.RemotePeer())
 		c.Close()
 		return
-	} else {
-		bwc := ids.Host.GetBandwidthReporter()
-		s = mstream.WrapStream(s, ID, bwc)
-
-		// ok give the response to our handler.
-		if err := msmux.SelectProtoOrFail(ID, s); err != nil {
-			log.Debugf("error writing stream header for %s", ID)
-			log.Event(context.TODO(), "IdentifyOpenFailed", c.RemotePeer())
-			s.Close()
-			return
-		} else {
-			ids.ResponseHandler(s)
-		}
 	}
+
+	bwc := ids.Host.GetBandwidthReporter()
+	s = mstream.WrapStream(s, ID, bwc)
+
+	// ok give the response to our handler.
+	if err := msmux.SelectProtoOrFail(ID, s); err != nil {
+		log.Debugf("error writing stream header for %s", ID)
+		log.Event(context.TODO(), "IdentifyOpenFailed", c.RemotePeer())
+		s.Close()
+		return
+	}
+
+	ids.ResponseHandler(s)
 
 	ids.currmu.Lock()
 	ch, found := ids.currid[c]
@@ -189,6 +189,8 @@ func (ids *IDService) consumeMessage(mes *pb.Identify, c inet.Conn) {
 		}
 		lmaddrs = append(lmaddrs, maddr)
 	}
+
+	lmaddrs = append(lmaddrs, c.RemoteMultiaddr())
 
 	// update our peerstore with the addresses. here, we SET the addresses, clearing old ones.
 	// We are receiving from the peer itself. this is current address ground truth.

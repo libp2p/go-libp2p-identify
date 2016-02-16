@@ -38,6 +38,7 @@ func subtestIDService(t *testing.T, postDialWait time.Duration) {
 
 	// the IDService should be opened automatically, by the network.
 	// what we should see now is that both peers know about each others listen addresses.
+	t.Log("test peer1 has peer2 addrs correctly")
 	testKnowsAddrs(t, h1, h2p, h2.Peerstore().Addrs(h2p)) // has them
 	testHasProtocolVersions(t, h1, h2p)
 
@@ -49,8 +50,12 @@ func subtestIDService(t *testing.T, postDialWait time.Duration) {
 	}
 	<-h2.IDService().IdentifyWait(c[0])
 
+	addrs := h1.Peerstore().Addrs(h1p)
+	addrs = append(addrs, c[0].RemoteMultiaddr())
+
 	// and the protocol versions.
-	testKnowsAddrs(t, h2, h1p, h1.Peerstore().Addrs(h1p)) // has them
+	t.Log("test peer2 has peer1 addrs correctly")
+	testKnowsAddrs(t, h2, h1p, addrs) // has them
 	testHasProtocolVersions(t, h2, h1p)
 }
 
@@ -58,7 +63,9 @@ func testKnowsAddrs(t *testing.T, h host.Host, p peer.ID, expected []ma.Multiadd
 	actual := h.Peerstore().Addrs(p)
 
 	if len(actual) != len(expected) {
-		t.Error("dont have the same addresses")
+		t.Errorf("expected: %s", expected)
+		t.Errorf("actual: %s", actual)
+		t.Fatal("dont have the same addresses")
 	}
 
 	have := map[string]struct{}{}
