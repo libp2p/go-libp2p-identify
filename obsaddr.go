@@ -4,8 +4,8 @@ import (
 	"sync"
 	"time"
 
-	peer "gx/ipfs/QmZwZjMVGss5rqYsJVGy18gNbkTJffFyq2x1uJ4e4p3ZAt/go-libp2p-peer"
-	ma "gx/ipfs/QmcobAGsCjYt5DXoq9et9L8yR8er7o7Cu3DTvpaq12jYSz/go-multiaddr"
+	peer "github.com/ipfs/go-libp2p-peer"
+	ma "github.com/jbenet/go-multiaddr"
 )
 
 // ObservedAddr is an entry for an address reported by our peers.
