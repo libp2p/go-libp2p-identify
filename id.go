@@ -72,8 +72,11 @@ func (ids *IDService) IdentifyConn(c inet.Conn) {
 		<-wait // already identifying it. wait for it.
 		return
 	}
-	ids.currid[c] = make(chan struct{})
+	ch := make(chan struct{})
+	ids.currid[c] = ch
 	ids.currmu.Unlock()
+
+	defer close(ch)
 
 	s, err := c.NewStream()
 	if err != nil {
@@ -97,7 +100,7 @@ func (ids *IDService) IdentifyConn(c inet.Conn) {
 	ids.ResponseHandler(s)
 
 	ids.currmu.Lock()
-	ch, found := ids.currid[c]
+	_, found := ids.currid[c]
 	delete(ids.currid, c)
 	ids.currmu.Unlock()
 
@@ -105,8 +108,6 @@ func (ids *IDService) IdentifyConn(c inet.Conn) {
 		log.Debugf("IdentifyConn failed to find channel (programmer error) for %s", c)
 		return
 	}
-
-	close(ch) // release everyone waiting.
 }
 
 func (ids *IDService) RequestHandler(s inet.Stream) {
