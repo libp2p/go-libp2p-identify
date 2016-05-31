@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	peer "github.com/ipfs/go-libp2p-peer"
+	pstore "github.com/ipfs/go-libp2p-peerstore"
 	ma "github.com/jbenet/go-multiaddr"
 )
 
@@ -69,7 +69,7 @@ func (oas *ObservedAddrSet) Add(addr ma.Multiaddr, observer ma.Multiaddr) {
 	// for zero-value.
 	if oas.addrs == nil {
 		oas.addrs = make(map[string]*ObservedAddr)
-		oas.ttl = peer.OwnObservedAddrTTL
+		oas.ttl = pstore.OwnObservedAddrTTL
 	}
 
 	s := addr.String()
@@ -114,7 +114,7 @@ func (oas *ObservedAddrSet) TTL() time.Duration {
 	defer oas.Unlock()
 	// for zero-value.
 	if oas.addrs == nil {
-		oas.ttl = peer.OwnObservedAddrTTL
+		oas.ttl = pstore.OwnObservedAddrTTL
 	}
 	return oas.ttl
 }

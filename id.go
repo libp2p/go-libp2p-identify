@@ -6,7 +6,7 @@ import (
 
 	semver "github.com/coreos/go-semver/semver"
 	ggio "github.com/gogo/protobuf/io"
-	peer "github.com/ipfs/go-libp2p-peer"
+	pstore "github.com/ipfs/go-libp2p-peerstore"
 	host "github.com/ipfs/go-libp2p/p2p/host"
 	mstream "github.com/ipfs/go-libp2p/p2p/metrics/stream"
 	inet "github.com/ipfs/go-libp2p/p2p/net"
@@ -194,7 +194,7 @@ func (ids *IDService) consumeMessage(mes *pb.Identify, c inet.Conn) {
 
 	// update our peerstore with the addresses. here, we SET the addresses, clearing old ones.
 	// We are receiving from the peer itself. this is current address ground truth.
-	ids.Host.Peerstore().SetAddrs(p, lmaddrs, peer.ConnectedAddrTTL)
+	ids.Host.Peerstore().SetAddrs(p, lmaddrs, pstore.ConnectedAddrTTL)
 	log.Debugf("%s received listen addrs for %s: %s", c.LocalPeer(), c.RemotePeer(), lmaddrs)
 
 	// get protocol versions
@@ -317,7 +317,7 @@ func (nn *netNotifiee) Disconnected(n inet.Network, v inet.Conn) {
 	ids := nn.IDService()
 	ps := ids.Host.Peerstore()
 	addrs := ps.Addrs(v.RemotePeer())
-	ps.SetAddrs(v.RemotePeer(), addrs, peer.RecentlyConnectedAddrTTL)
+	ps.SetAddrs(v.RemotePeer(), addrs, pstore.RecentlyConnectedAddrTTL)
 }
 
 func (nn *netNotifiee) OpenedStream(n inet.Network, v inet.Stream) {}
