@@ -190,7 +190,11 @@ func (ids *IDService) consumeMessage(mes *pb.Identify, c inet.Conn) {
 		lmaddrs = append(lmaddrs, maddr)
 	}
 
-	lmaddrs = append(lmaddrs, c.RemoteMultiaddr())
+	// if the address reported by the connection roughly matches their annoucned
+	// listener addresses, its likely to be an external NAT address
+	if HasConsistentTransport(c.RemoteMultiaddr(), lmaddrs) {
+		lmaddrs = append(lmaddrs, c.RemoteMultiaddr())
+	}
 
 	// update our peerstore with the addresses. here, we SET the addresses, clearing old ones.
 	// We are receiving from the peer itself. this is current address ground truth.
@@ -212,6 +216,35 @@ func (ids *IDService) consumeMessage(mes *pb.Identify, c inet.Conn) {
 
 	ids.Host.Peerstore().Put(p, "ProtocolVersion", pv)
 	ids.Host.Peerstore().Put(p, "AgentVersion", av)
+}
+
+// HasConsistentTransport returns true if the address 'a' shares a
+// protocol set with any address in the green set. This is used
+// to check if a given address might be one of the addresses a peer is
+// listening on.
+func HasConsistentTransport(a ma.Multiaddr, green []ma.Multiaddr) bool {
+	protosMatch := func(a, b []ma.Protocol) bool {
+		if len(a) != len(b) {
+			return false
+		}
+
+		for i, p := range a {
+			if b[i].Code != p.Code {
+				return false
+			}
+		}
+		return true
+	}
+
+	protos := a.Protocols()
+
+	for _, ga := range green {
+		if protosMatch(protos, ga.Protocols()) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // IdentifyWait returns a channel which will be closed once
