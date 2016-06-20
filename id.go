@@ -27,7 +27,7 @@ const ID = "/ipfs/id/1.0.0"
 // LibP2PVersion holds the current protocol version for a client running this code
 // TODO(jbenet): fix the versioning mess.
 const LibP2PVersion = "ipfs/0.1.0"
-const ClientVersion = "go-libp2p/0.1.0"
+const ClientVersion = "go-libp2p/3.3.4"
 
 // IDService is a structure that implements ProtocolIdentify.
 // It is a trivial service that gives the other peer some
