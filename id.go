@@ -365,5 +365,5 @@ func logProtocolMismatchDisconnect(c inet.Conn, protocol, agent string) {
 	lm["protocolVersion"] = protocol
 	lm["agentVersion"] = agent
 	log.Event(context.TODO(), "IdentifyProtocolMismatch", lm)
-	log.Debug("IdentifyProtocolMismatch %s %s %s (disconnected)", c.RemotePeer(), protocol, agent)
+	log.Debugf("IdentifyProtocolMismatch %s %s %s (disconnected)", c.RemotePeer(), protocol, agent)
 }
