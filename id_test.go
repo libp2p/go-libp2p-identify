@@ -5,9 +5,9 @@ import (
 	"time"
 
 	peer "github.com/ipfs/go-libp2p-peer"
-	host "github.com/ipfs/go-libp2p/p2p/host"
-	identify "github.com/ipfs/go-libp2p/p2p/protocol/identify"
-	testutil "github.com/ipfs/go-libp2p/p2p/test/util"
+	host "github.com/libp2p/go-libp2p/p2p/host"
+	identify "github.com/libp2p/go-libp2p/p2p/protocol/identify"
+	testutil "github.com/libp2p/go-libp2p/p2p/test/util"
 
 	ma "github.com/jbenet/go-multiaddr"
 	context "golang.org/x/net/context"
