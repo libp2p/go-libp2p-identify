@@ -86,8 +86,10 @@ func (ids *IDService) IdentifyConn(c inet.Conn) {
 		return
 	}
 
+	s.SetProtocol(ID)
+
 	bwc := ids.Host.GetBandwidthReporter()
-	s = mstream.WrapStream(s, ID, bwc)
+	s = mstream.WrapStream(s, bwc)
 
 	// ok give the response to our handler.
 	if err := msmux.SelectProtoOrFail(ID, s); err != nil {
@@ -115,7 +117,7 @@ func (ids *IDService) RequestHandler(s inet.Stream) {
 	c := s.Conn()
 
 	bwc := ids.Host.GetBandwidthReporter()
-	s = mstream.WrapStream(s, ID, bwc)
+	s = mstream.WrapStream(s, bwc)
 
 	w := ggio.NewDelimitedWriter(s)
 	mes := pb.Identify{}
