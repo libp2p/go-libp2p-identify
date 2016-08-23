@@ -175,7 +175,7 @@ func (ids *IDService) consumeMessage(mes *pb.Identify, c inet.Conn) {
 	p := c.RemotePeer()
 
 	// mes.Protocols
-	ids.Host.Peerstore().SetProtocols(p, mes.Protocols)
+	ids.Host.Peerstore().AddProtocols(p, mes.Protocols...)
 
 	// mes.ObservedAddr
 	ids.consumeObservedAddress(mes.GetObservedAddr(), c)
