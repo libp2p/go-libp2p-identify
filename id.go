@@ -166,6 +166,7 @@ func (ids *IDService) populateMessage(mes *pb.Identify, c inet.Conn) {
 	}
 	log.Debugf("%s sent listen addrs to %s: %s", c.LocalPeer(), c.RemotePeer(), laddrs)
 
+	// set our public key
 	ownKey := ids.Host.Peerstore().PubKey(ids.Host.ID())
 	if ownKey == nil {
 		log.Errorf("did not have own public key in Peerstore")
@@ -258,8 +259,21 @@ func (ids *IDService) consumeReceivedPubKey(c inet.Conn, kb []byte) {
 		log.Debugf("%s cannot get peer.ID from key of remote peer: %s, %s", lp, rp, err)
 		return
 	}
+
 	if np != rp {
-		log.Errorf("%s received key for remote peer %s mismatch: %s", lp, rp, np)
+		// if the newKey's peer.ID does not match known peer.ID...
+
+		if rp == "" && np != "" {
+			// if local peerid is empty, then use the new, sent key.
+			err := ids.Host.Peerstore().AddPubKey(rp, newKey)
+			if err != nil {
+				log.Debugf("%s could not add key for %s to peerstore: %s", lp, rp, err)
+			}
+
+		} else {
+			// we have a local peer.ID and it does not match the sent key... error.
+			log.Errorf("%s received key for remote peer %s mismatch: %s", lp, rp, np)
+		}
 		return
 	}
 
