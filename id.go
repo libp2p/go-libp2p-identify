@@ -164,6 +164,17 @@ func (ids *IDService) populateMessage(mes *pb.Identify, c inet.Conn) {
 	}
 	log.Debugf("%s sent listen addrs to %s: %s", c.LocalPeer(), c.RemotePeer(), laddrs)
 
+	ownKey := ids.Host.Peerstore().PubKey(ids.Host.ID())
+	if ownKey == nil {
+		log.Errorf("did not have own public key in Peerstore")
+	} else {
+		if kb, err := ownKey.Bytes(); err != nil {
+			log.Errorf("failed to convert key to bytes")
+		} else {
+			mes.PublicKey = kb
+		}
+	}
+
 	// set protocol versions
 	pv := LibP2PVersion
 	av := ClientVersion
