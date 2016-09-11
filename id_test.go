@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	ic "github.com/ipfs/go-libp2p-crypto"
 	peer "github.com/ipfs/go-libp2p-peer"
 	host "github.com/libp2p/go-libp2p/p2p/host"
 	identify "github.com/libp2p/go-libp2p/p2p/protocol/identify"
@@ -41,6 +42,7 @@ func subtestIDService(t *testing.T, postDialWait time.Duration) {
 	t.Log("test peer1 has peer2 addrs correctly")
 	testKnowsAddrs(t, h1, h2p, h2.Peerstore().Addrs(h2p)) // has them
 	testHasProtocolVersions(t, h1, h2p)
+	testHasPublicKey(t, h1, h2p, h2.Peerstore().PubKey(h2p)) // h1 should have h2's public key
 
 	// now, this wait we do have to do. it's the wait for the Listening side
 	// to be done identifying the connection.
@@ -57,6 +59,7 @@ func subtestIDService(t *testing.T, postDialWait time.Duration) {
 	t.Log("test peer2 has peer1 addrs correctly")
 	testKnowsAddrs(t, h2, h1p, addrs) // has them
 	testHasProtocolVersions(t, h2, h1p)
+	testHasPublicKey(t, h2, h1p, h1.Peerstore().PubKey(h1p)) // h1 should have h2's public key
 }
 
 func testKnowsAddrs(t *testing.T, h host.Host, p peer.ID, expected []ma.Multiaddr) {
@@ -92,6 +95,25 @@ func testHasProtocolVersions(t *testing.T, h host.Host, p peer.ID) {
 	v, err = h.Peerstore().Get(p, "AgentVersion")
 	if v.(string) != identify.ClientVersion {
 		t.Error("agent version mismatch", err)
+	}
+}
+
+func testHasPublicKey(t *testing.T, h host.Host, p peer.ID, shouldBe ic.PubKey) {
+	k := h.Peerstore().PubKey(p)
+	if k == nil {
+		t.Error("no public key")
+		return
+	}
+	if !k.Equals(shouldBe) {
+		t.Error("key mismatch")
+		return
+	}
+
+	p2, err := peer.IDFromPublicKey(k)
+	if err != nil {
+		t.Error("could not make key")
+	} else if p != p2 {
+		t.Error("key does not match peerid")
 	}
 }
 
