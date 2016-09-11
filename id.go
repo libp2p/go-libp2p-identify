@@ -6,6 +6,8 @@ import (
 
 	semver "github.com/coreos/go-semver/semver"
 	ggio "github.com/gogo/protobuf/io"
+	ic "github.com/ipfs/go-libp2p-crypto"
+	peer "github.com/ipfs/go-libp2p-peer"
 	pstore "github.com/ipfs/go-libp2p-peerstore"
 	ma "github.com/jbenet/go-multiaddr"
 	host "github.com/libp2p/go-libp2p/p2p/host"
@@ -230,6 +232,70 @@ func (ids *IDService) consumeMessage(mes *pb.Identify, c inet.Conn) {
 
 	ids.Host.Peerstore().Put(p, "ProtocolVersion", pv)
 	ids.Host.Peerstore().Put(p, "AgentVersion", av)
+
+	// get the key from the other side. we may not have it (no-auth transport)
+	ids.consumeReceivedPubKey(c, mes.PublicKey)
+}
+
+func (ids *IDService) consumeReceivedPubKey(c inet.Conn, kb []byte) {
+	lp := c.LocalPeer()
+	rp := c.RemotePeer()
+
+	if kb == nil {
+		log.Debugf("%s did not receive public key for remote peer: %s", lp, rp)
+		return
+	}
+
+	newKey, err := ic.UnmarshalPublicKey(kb)
+	if err != nil {
+		log.Errorf("%s cannot unmarshal key from remote peer: %s", lp, rp)
+		return
+	}
+
+	// verify key matches peer.ID
+	np, err := peer.IDFromPublicKey(newKey)
+	if err != nil {
+		log.Debugf("%s cannot get peer.ID from key of remote peer: %s, %s", lp, rp, err)
+		return
+	}
+	if np != rp {
+		log.Errorf("%s received key for remote peer %s mismatch: %s", lp, rp, np)
+		return
+	}
+
+	currKey := ids.Host.Peerstore().PubKey(rp)
+	if currKey == nil {
+		// no key? no auth transport. set this one.
+		err := ids.Host.Peerstore().AddPubKey(rp, newKey)
+		if err != nil {
+			log.Debugf("%s could not add key for %s to peerstore: %s", lp, rp, err)
+		}
+		return
+	}
+
+	// ok, we have a local key, we should verify they match.
+	if currKey.Equals(newKey) {
+		return // ok great. we're done.
+	}
+
+	// weird, got a different key... but the different key MATCHES the peer.ID.
+	// this odd. let's log error and investigate. this should basically never happen
+	// and it means we have something funky going on and possibly a bug.
+	log.Errorf("%s identify got a different key for: %s", lp, rp)
+
+	// okay... does ours NOT match the remote peer.ID?
+	cp, err := peer.IDFromPublicKey(currKey)
+	if err != nil {
+		log.Errorf("%s cannot get peer.ID from local key of remote peer: %s, %s", lp, rp, err)
+		return
+	}
+	if cp != rp {
+		log.Errorf("%s local key for remote peer %s yields different peer.ID: %s", lp, rp, cp)
+		return
+	}
+
+	// okay... curr key DOES NOT match new key. both match peer.ID. wat?
+	log.Errorf("%s local key and received key for %s do not match, but match peer.ID", lp, rp)
 }
 
 // HasConsistentTransport returns true if the address 'a' shares a
