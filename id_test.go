@@ -10,8 +10,8 @@ import (
 	identify "github.com/libp2p/go-libp2p/p2p/protocol/identify"
 	testutil "github.com/libp2p/go-libp2p/p2p/test/util"
 
+	"context"
 	ma "github.com/jbenet/go-multiaddr"
-	context "golang.org/x/net/context"
 )
 
 func subtestIDService(t *testing.T, postDialWait time.Duration) {

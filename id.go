@@ -1,6 +1,7 @@
 package identify
 
 import (
+	"context"
 	"strings"
 	"sync"
 
@@ -15,7 +16,6 @@ import (
 	inet "github.com/libp2p/go-libp2p/p2p/net"
 	pb "github.com/libp2p/go-libp2p/p2p/protocol/identify/pb"
 	msmux "github.com/whyrusleeping/go-multistream"
-	context "golang.org/x/net/context"
 
 	lgbl "github.com/ipfs/go-libp2p-loggables"
 	logging "github.com/ipfs/go-log"
