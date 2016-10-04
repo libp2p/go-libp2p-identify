@@ -5,20 +5,20 @@ import (
 	"strings"
 	"sync"
 
+	host "github.com/libp2p/go-libp2p/p2p/host"
+	pb "github.com/libp2p/go-libp2p/p2p/protocol/identify/pb"
+
 	semver "github.com/coreos/go-semver/semver"
 	ggio "github.com/gogo/protobuf/io"
 	ic "github.com/ipfs/go-libp2p-crypto"
+	lgbl "github.com/ipfs/go-libp2p-loggables"
 	peer "github.com/ipfs/go-libp2p-peer"
 	pstore "github.com/ipfs/go-libp2p-peerstore"
-	ma "github.com/jbenet/go-multiaddr"
-	host "github.com/libp2p/go-libp2p/p2p/host"
-	mstream "github.com/libp2p/go-libp2p/p2p/metrics/stream"
-	inet "github.com/libp2p/go-libp2p/p2p/net"
-	pb "github.com/libp2p/go-libp2p/p2p/protocol/identify/pb"
-	msmux "github.com/whyrusleeping/go-multistream"
-
-	lgbl "github.com/ipfs/go-libp2p-loggables"
 	logging "github.com/ipfs/go-log"
+	ma "github.com/jbenet/go-multiaddr"
+	mstream "github.com/libp2p/go-libp2p-metrics/stream"
+	inet "github.com/libp2p/go-libp2p-net"
+	msmux "github.com/whyrusleeping/go-multistream"
 )
 
 var log = logging.Logger("net/identify")
