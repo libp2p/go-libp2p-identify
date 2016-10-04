@@ -5,7 +5,6 @@ import (
 	"strings"
 	"sync"
 
-	host "github.com/libp2p/go-libp2p/p2p/host"
 	pb "github.com/libp2p/go-libp2p/p2p/protocol/identify/pb"
 
 	semver "github.com/coreos/go-semver/semver"
@@ -16,6 +15,7 @@ import (
 	pstore "github.com/ipfs/go-libp2p-peerstore"
 	logging "github.com/ipfs/go-log"
 	ma "github.com/jbenet/go-multiaddr"
+	host "github.com/libp2p/go-libp2p-host"
 	mstream "github.com/libp2p/go-libp2p-metrics/stream"
 	inet "github.com/libp2p/go-libp2p-net"
 	msmux "github.com/whyrusleeping/go-multistream"

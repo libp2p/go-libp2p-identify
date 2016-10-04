@@ -1,17 +1,17 @@
 package identify_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
 	ic "github.com/ipfs/go-libp2p-crypto"
 	peer "github.com/ipfs/go-libp2p-peer"
-	host "github.com/libp2p/go-libp2p/p2p/host"
 	identify "github.com/libp2p/go-libp2p/p2p/protocol/identify"
 	testutil "github.com/libp2p/go-libp2p/p2p/test/util"
 
-	"context"
 	ma "github.com/jbenet/go-multiaddr"
+	host "github.com/libp2p/go-libp2p-host"
 )
 
 func subtestIDService(t *testing.T, postDialWait time.Duration) {
