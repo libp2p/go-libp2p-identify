@@ -5,13 +5,13 @@ import (
 	"testing"
 	"time"
 
-	ic "github.com/ipfs/go-libp2p-crypto"
-	peer "github.com/ipfs/go-libp2p-peer"
+	ic "github.com/libp2p/go-libp2p-crypto"
+	peer "github.com/libp2p/go-libp2p-peer"
 	identify "github.com/libp2p/go-libp2p/p2p/protocol/identify"
 	testutil "github.com/libp2p/go-libp2p/p2p/test/util"
 
-	ma "github.com/jbenet/go-multiaddr"
 	host "github.com/libp2p/go-libp2p-host"
+	ma "github.com/multiformats/go-multiaddr"
 )
 
 func subtestIDService(t *testing.T, postDialWait time.Duration) {
