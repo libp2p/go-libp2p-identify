@@ -87,6 +87,7 @@ func (ids *IDService) IdentifyConn(c inet.Conn) {
 		c.Close()
 		return
 	}
+	defer s.Close()
 
 	s.SetProtocol(ID)
 
@@ -97,7 +98,6 @@ func (ids *IDService) IdentifyConn(c inet.Conn) {
 	if err := msmux.SelectProtoOrFail(ID, s); err != nil {
 		log.Debugf("error writing stream header for %s", ID)
 		log.Event(context.TODO(), "IdentifyOpenFailed", c.RemotePeer())
-		s.Close()
 		return
 	}
 
