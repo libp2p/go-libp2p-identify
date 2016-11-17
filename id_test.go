@@ -6,23 +6,26 @@ import (
 	"time"
 
 	ic "github.com/libp2p/go-libp2p-crypto"
+	testutil "github.com/libp2p/go-libp2p-netutil"
 	peer "github.com/libp2p/go-libp2p-peer"
 	identify "github.com/libp2p/go-libp2p/p2p/protocol/identify"
-	testutil "github.com/libp2p/go-libp2p/p2p/test/util"
 
+	blhost "github.com/libp2p/go-libp2p-blankhost"
 	host "github.com/libp2p/go-libp2p-host"
 	ma "github.com/multiformats/go-multiaddr"
 )
 
 func subtestIDService(t *testing.T, postDialWait time.Duration) {
 
-	// the generated networks should have the id service wired in.
 	ctx := context.Background()
-	h1 := testutil.GenHostSwarm(t, ctx)
-	h2 := testutil.GenHostSwarm(t, ctx)
+	h1 := blhost.NewBlankHost(testutil.GenSwarmNetwork(t, ctx))
+	h2 := blhost.NewBlankHost(testutil.GenSwarmNetwork(t, ctx))
 
 	h1p := h1.ID()
 	h2p := h2.ID()
+
+	ids1 := identify.NewIDService(h1)
+	ids2 := identify.NewIDService(h2)
 
 	testKnowsAddrs(t, h1, h2p, []ma.Multiaddr{}) // nothing
 	testKnowsAddrs(t, h2, h1p, []ma.Multiaddr{}) // nothing
@@ -32,10 +35,12 @@ func subtestIDService(t *testing.T, postDialWait time.Duration) {
 		t.Fatal(err)
 	}
 
-	// we need to wait here if Dial returns before ID service is finished.
-	if postDialWait > 0 {
-		<-time.After(postDialWait)
+	h1t2c := h1.Network().ConnsToPeer(h2p)
+	if len(h1t2c) == 0 {
+		t.Fatal("should have a conn here")
 	}
+
+	ids1.IdentifyConn(h1t2c[0])
 
 	// the IDService should be opened automatically, by the network.
 	// what we should see now is that both peers know about each others listen addresses.
@@ -50,7 +55,7 @@ func subtestIDService(t *testing.T, postDialWait time.Duration) {
 	if len(c) < 1 {
 		t.Fatal("should have connection by now at least.")
 	}
-	<-h2.IDService().IdentifyWait(c[0])
+	ids2.IdentifyConn(c[0])
 
 	addrs := h1.Peerstore().Addrs(h1p)
 	addrs = append(addrs, c[0].RemoteMultiaddr())
