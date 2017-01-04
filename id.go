@@ -100,8 +100,7 @@ func (ids *IDService) IdentifyConn(c inet.Conn) {
 
 	// ok give the response to our handler.
 	if err := msmux.SelectProtoOrFail(ID, s); err != nil {
-		log.Debugf("error writing stream header for %s", ID)
-		log.Event(context.TODO(), "IdentifyOpenFailed", c.RemotePeer())
+		log.Event(context.TODO(), "IdentifyOpenFailed", c.RemotePeer(), logging.Metadata{"error": err})
 		return
 	}
 
@@ -113,7 +112,7 @@ func (ids *IDService) IdentifyConn(c inet.Conn) {
 	ids.currmu.Unlock()
 
 	if !found {
-		log.Debugf("IdentifyConn failed to find channel (programmer error) for %s", c)
+		log.Errorf("IdentifyConn failed to find channel (programmer error) for %s", c)
 		return
 	}
 }
@@ -142,6 +141,7 @@ func (ids *IDService) ResponseHandler(s inet.Stream) {
 	r := ggio.NewDelimitedReader(s, 2048)
 	mes := pb.Identify{}
 	if err := r.ReadMsg(&mes); err != nil {
+		log.Warning("error reading identify message: ", err)
 		return
 	}
 	ids.consumeMessage(&mes, c)
