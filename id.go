@@ -5,7 +5,7 @@ import (
 	"strings"
 	"sync"
 
-	pb "github.com/libp2p/go-libp2p/p2p/protocol/identify/pb"
+	pb "github.com/libp2p/go-libp2p-identify/pb"
 
 	semver "github.com/coreos/go-semver/semver"
 	ggio "github.com/gogo/protobuf/io"

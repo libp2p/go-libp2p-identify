@@ -6,9 +6,9 @@ import (
 	"time"
 
 	ic "github.com/libp2p/go-libp2p-crypto"
+	identify "github.com/libp2p/go-libp2p-identify"
 	testutil "github.com/libp2p/go-libp2p-netutil"
 	peer "github.com/libp2p/go-libp2p-peer"
-	identify "github.com/libp2p/go-libp2p/p2p/protocol/identify"
 
 	blhost "github.com/libp2p/go-libp2p-blankhost"
 	host "github.com/libp2p/go-libp2p-host"
