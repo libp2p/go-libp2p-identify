@@ -1,7 +1,6 @@
 package identify
 
 import (
-	"context"
 	"strings"
 	"sync"
 
@@ -12,7 +11,6 @@ import (
 	logging "github.com/ipfs/go-log"
 	ic "github.com/libp2p/go-libp2p-crypto"
 	host "github.com/libp2p/go-libp2p-host"
-	lgbl "github.com/libp2p/go-libp2p-loggables"
 	metrics "github.com/libp2p/go-libp2p-metrics"
 	mstream "github.com/libp2p/go-libp2p-metrics/stream"
 	inet "github.com/libp2p/go-libp2p-net"
@@ -85,8 +83,7 @@ func (ids *IDService) IdentifyConn(c inet.Conn) {
 
 	s, err := c.NewStream()
 	if err != nil {
-		log.Debugf("error opening initial stream for %s: %s", ID, err)
-		log.Event(context.TODO(), "IdentifyOpenFailed", c.RemotePeer())
+		log.Infow("IdentifyOpenFailed", "remote_peer", c.RemotePeer())
 		c.Close()
 		return
 	}
@@ -100,7 +97,7 @@ func (ids *IDService) IdentifyConn(c inet.Conn) {
 
 	// ok give the response to our handler.
 	if err := msmux.SelectProtoOrFail(ID, s); err != nil {
-		log.Event(context.TODO(), "IdentifyOpenFailed", c.RemotePeer(), logging.Metadata{"error": err})
+		log.Errorw("IdentifyOpenFailed", "remote_peer", c.RemotePeer(), "error", err)
 		return
 	}
 
@@ -458,11 +455,10 @@ func (nn *netNotifiee) Listen(n inet.Network, a ma.Multiaddr)      {}
 func (nn *netNotifiee) ListenClose(n inet.Network, a ma.Multiaddr) {}
 
 func logProtocolMismatchDisconnect(c inet.Conn, protocol, agent string) {
-	lm := make(lgbl.DeferredMap)
-	lm["remotePeer"] = func() interface{} { return c.RemotePeer().Pretty() }
-	lm["remoteAddr"] = func() interface{} { return c.RemoteMultiaddr().String() }
-	lm["protocolVersion"] = protocol
-	lm["agentVersion"] = agent
-	log.Event(context.TODO(), "IdentifyProtocolMismatch", lm)
-	log.Debugf("IdentifyProtocolMismatch %s %s %s (disconnected)", c.RemotePeer(), protocol, agent)
+	log.Infow("IdentifyProtocolMismatch",
+		"remote_peer", c.RemotePeer(),
+		"remote_addr", c.RemoteMultiaddr().String(),
+		"protocol", protocol,
+		"agent", agent,
+	)
 }
