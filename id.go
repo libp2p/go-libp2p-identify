@@ -141,7 +141,7 @@ func (ids *IDService) ResponseHandler(s inet.Stream) {
 	r := ggio.NewDelimitedReader(s, 2048)
 	mes := pb.Identify{}
 	if err := r.ReadMsg(&mes); err != nil {
-		log.Warning("error reading identify message: ", err)
+		log.Warn("error reading identify message: ", err)
 		return
 	}
 	ids.consumeMessage(&mes, c)
